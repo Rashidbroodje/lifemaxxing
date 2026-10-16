@@ -1,0 +1,31 @@
+{
+  "name": "Lifemaxxing",
+  "short_name": "Lifemaxxing",
+  "description": "Dagelijkse gewoontes, voortgang, eten en water, geld, films en boeken. Alles blijft in je eigen browser.",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1f4f6",
+  "theme_color": "#12807f",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

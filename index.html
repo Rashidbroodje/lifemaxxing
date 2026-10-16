@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12807f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lifemaxxing">
+<title>Lifemaxxing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow column, four tabs at the top, a day form first so logging takes seconds. */
+:root {
+  --bg: #f1f4f6; --panel: #ffffff; --ink: #131a21; --muted: #5b6772; --line: #dce2e7;
+  --accent: #12807f; --accent-ink: #ffffff; --soft: #e4eff0;
+  --c-master: #4659c9; --c-project: #12807f; --c-farsi: #b97709; --c-spaans: #cc4a37; --ok: #2a8a57;
+  --f-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --f-body: 'DM Sans', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1317; --panel: #161d23; --ink: #e8eef2; --muted: #92a0ac; --line: #25303a;
+    --accent: #4cc2c0; --accent-ink: #06201f; --soft: #17302f;
+    --c-master: #8b9cff; --c-project: #4cc2c0; --c-farsi: #f0b24b; --c-spaans: #f2806b; --ok: #5fcf93;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1317; --panel: #161d23; --ink: #e8eef2; --muted: #92a0ac; --line: #25303a;
+  --accent: #4cc2c0; --accent-ink: #06201f; --soft: #17302f;
+  --c-master: #8b9cff; --c-project: #4cc2c0; --c-farsi: #f0b24b; --c-spaans: #f2806b; --ok: #5fcf93;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+input[type=file] { font: inherit; color: var(--ink); max-width: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); }
+.app { max-width: 44rem; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+h2 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; }
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.sub { color: var(--muted); font-size: 0.85rem; }
+.streak { text-align: right; min-width: 0; }
+.streak b { font-family: var(--f-display); font-size: 1.75rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; display: block; }
+.streak span { color: var(--muted); font-size: 0.75rem; }
+.notice { background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; }
+.tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(4.6rem, 1fr)); gap: 4px; background: var(--line); padding: 4px; border-radius: 12px; }
+.tabs button { font: inherit; font-weight: 500; border: 0; background: transparent; color: var(--muted); padding: 9px 4px; border-radius: 9px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { display: grid; gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.plan-line { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.85rem; color: var(--muted); }
+.blocks { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 12px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label, .lbl { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+.num { display: flex; min-width: 0; }
+.num input { flex: 1; min-width: 0; text-align: center; border-radius: 0; border-left: 0; border-right: 0; }
+.num button { width: 40px; flex: none; font: inherit; font-size: 1.1rem; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.num button:first-child { border-radius: 10px 0 0 10px; }
+.num button:last-child { border-radius: 0 10px 10px 0; }
+input[type=number], input[type=date], input[type=month], input[type=text], input[type=search], textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; width: 100%; min-width: 0; font-variant-numeric: tabular-nums; }
+textarea { resize: vertical; min-height: 3.2rem; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.btn { font: inherit; font-weight: 700; border: 0; background: var(--accent); color: var(--accent-ink); padding: 11px 16px; border-radius: 10px; cursor: pointer; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 500; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.status { font-size: 0.85rem; color: var(--muted); }
+.min { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.9rem; }
+.min span::before { content: "○ "; color: var(--muted); }
+.min span.on::before { content: "● "; color: var(--ok); }
+.bars { display: grid; gap: 14px; }
+.goalrow { display: grid; gap: 6px; }
+.goalrow .hd { display: flex; justify-content: space-between; gap: 8px; font-size: 0.9rem; }
+.goalrow .hd span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+.track { height: 10px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.track i { display: block; height: 100%; border-radius: 999px; }
+.strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.strip button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 10px; padding: 8px 2px; display: grid; gap: 2px; justify-items: center; cursor: pointer; min-width: 0; }
+.strip button.today { border-color: var(--accent); }
+.strip button.future { opacity: .55; }
+.strip small { color: var(--muted); font-size: 0.7rem; font-variant-numeric: tabular-nums; }
+.strip .dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.strip .dot.on { background: var(--ok); border-color: var(--ok); }
+.weeknav { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.weeknav button { font: inherit; width: 40px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+details summary { cursor: pointer; font-weight: 500; }
+details[open] summary { margin-bottom: 12px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { display: grid; gap: 2px; min-width: 0; }
+.stat b { font-family: var(--f-display); font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 0.75rem; color: var(--muted); }
+.chart svg { display: block; overflow: visible; }
+.chart .axis { stroke: var(--line); stroke-width: 1; }
+.chart .ref { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.chart .lab { fill: var(--muted); font-size: 10px; font-family: var(--f-body); }
+.chart .s0 { fill: var(--c-project); }
+.chart .s1 { fill: var(--c-spaans); }
+.chart .steps { fill: var(--accent); }
+.chart .ln { fill: none; stroke: var(--c-master); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.chart .pt { fill: var(--c-master); }
+.readout { font-size: 0.85rem; color: var(--muted); margin-top: 6px; min-height: 1.3em; font-variant-numeric: tabular-nums; }
+.empty { font-size: 0.9rem; color: var(--muted); padding: 8px 0; max-width: 32rem; }
+.legend { display: flex; gap: 14px; font-size: 0.8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 7px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 500; }
+select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; max-width: 100%; }
+.big { font-family: var(--f-display); font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 0; }
+.big small { font-family: var(--f-body); font-size: 0.85rem; font-weight: 400; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { font: inherit; font-size: 0.85rem; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.chips button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.item { display: grid; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.item:last-child { border-bottom: 0; padding-bottom: 0; }
+.ihead { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.ictl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ictl input { width: 9.5rem; }
+.mini { font: inherit; font-size: 0.8rem; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.meal { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.meal .grow { display: grid; min-width: 0; overflow-wrap: anywhere; }
+.grp { font-size: 0.85rem; font-weight: 600; margin: 10px 0 0; color: var(--muted); }
+.chart .s2 { fill: var(--c-master); }
+@media (prefers-reduced-motion: no-preference) { .track i { transition: width .3s ease; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <h1>Lifemaxxing</h1>
+      <p class="sub" id="today-label"></p>
+    </div>
+    <div class="streak"><b id="streak-n">0</b><span>dagen op rij op je minimum</span></div>
+  </header>
+
+  <p class="notice" id="notice" hidden></p>
+
+  <nav class="tabs" role="tablist" aria-label="Onderdelen">
+    <button role="tab" id="t-today" data-tab="today" aria-selected="true">Vandaag</button>
+    <button role="tab" id="t-food" data-tab="food" aria-selected="false">Eten</button>
+    <button role="tab" id="t-week" data-tab="week" aria-selected="false">Week</button>
+    <button role="tab" id="t-trends" data-tab="trends" aria-selected="false">Trends</button>
+    <button role="tab" id="t-money" data-tab="money" aria-selected="false">Geld</button>
+    <button role="tab" id="t-watch" data-tab="watch" aria-selected="false">Kijken</button>
+    <button role="tab" id="t-read" data-tab="read" aria-selected="false">Lezen</button>
+  </nav>
+
+  <section class="panel" id="p-today" aria-labelledby="t-today">
+    <div class="card">
+      <h2 id="plan-title">Gepland</h2>
+      <div class="plan-line" id="plan-line"></div>
+      <div class="blocks" id="plan-blocks"></div>
+      <p class="sub" id="plan-note"></p>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label for="f-date">Dag</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="fields">
+        <div class="field"><label for="f-steps">Stappen</label><div class="num"><button type="button" data-for="f-steps" data-step="-1000" aria-label="1000 minder">−</button><input type="number" id="f-steps" inputmode="numeric" min="0" step="1"><button type="button" data-for="f-steps" data-step="1000" aria-label="1000 meer">+</button></div></div>
+        <div class="field"><label for="f-sleep">Slaapscore (0–100)</label><div class="num"><button type="button" data-for="f-sleep" data-step="-1" aria-label="1 minder">−</button><input type="number" id="f-sleep" inputmode="numeric" min="0" max="100" step="1"><button type="button" data-for="f-sleep" data-step="1" aria-label="1 meer">+</button></div></div>
+        <div class="field"><label for="f-master">Master (uur)</label><div class="num"><button type="button" data-for="f-master" data-step="-0.5" aria-label="Een half uur minder">−</button><input type="number" id="f-master" inputmode="decimal" min="0" step="any"><button type="button" data-for="f-master" data-step="0.5" aria-label="Een half uur meer">+</button></div></div>
+        <div class="field"><label for="f-project">Project (uur)</label><div class="num"><button type="button" data-for="f-project" data-step="-0.5" aria-label="Een half uur minder">−</button><input type="number" id="f-project" inputmode="decimal" min="0" step="any"><button type="button" data-for="f-project" data-step="0.5" aria-label="Een half uur meer">+</button></div></div>
+        <div class="field"><label for="f-farsi">Farsi (min)</label><div class="num"><button type="button" data-for="f-farsi" data-step="-5" aria-label="5 minuten minder">−</button><input type="number" id="f-farsi" inputmode="numeric" min="0" step="1"><button type="button" data-for="f-farsi" data-step="5" aria-label="5 minuten meer">+</button></div></div>
+        <div class="field"><label for="f-spaans">Spaans (min)</label><div class="num"><button type="button" data-for="f-spaans" data-step="-5" aria-label="5 minuten minder">−</button><input type="number" id="f-spaans" inputmode="numeric" min="0" step="1"><button type="button" data-for="f-spaans" data-step="5" aria-label="5 minuten meer">+</button></div></div>
+      </div>
+      <label class="check"><input type="checkbox" id="f-workout"> Getraind of gesport</label>
+      <div class="field"><label for="f-note">Notitie</label><textarea id="f-note" rows="2"></textarea></div>
+      <div class="min" id="min-badges" aria-live="polite"></div>
+      <div class="row"><button class="btn" id="save-day" type="button">Opslaan</button><span class="status" id="day-status" role="status"></span></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-food" aria-labelledby="t-food" hidden>
+    <div class="card">
+      <div class="weeknav">
+        <button type="button" id="food-prev" aria-label="Vorige dag">←</button>
+        <h2 id="food-label"></h2>
+        <button type="button" id="food-next" aria-label="Volgende dag">→</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Water</h2>
+      <p class="big"><b id="water-now">0</b> <small>van <span id="water-goal">0</span> ml</small></p>
+      <div class="track"><i id="water-fill" style="background:var(--c-master);width:0"></i></div>
+      <div class="row">
+        <button class="btn ghost" type="button" data-ml="-250">−250 ml</button>
+        <button class="btn" type="button" data-ml="250">+250 ml</button>
+        <button class="btn" type="button" data-ml="500">+500 ml</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Eten toevoegen</h2>
+      <div class="field"><label for="e-text">Wat at je?</label><input type="text" id="e-text" maxlength="120" autocomplete="off"></div>
+      <div class="fields">
+        <div class="field"><label for="e-meal">Moment</label><select id="e-meal"><option value="ontbijt">Ontbijt</option><option value="lunch">Lunch</option><option value="diner">Diner</option><option value="snack">Snack</option></select></div>
+        <div class="field"><label for="e-kcal">Calorieën (optioneel)</label><input type="number" id="e-kcal" inputmode="numeric" min="0" step="1"></div>
+        <div class="field"><label for="e-prot">Eiwit in gram (optioneel)</label><input type="number" id="e-prot" inputmode="decimal" min="0" step="any"></div>
+      </div>
+      <div class="row"><button class="btn" id="add-meal" type="button">Toevoegen</button><span class="status" id="food-status" role="status"></span></div>
+    </div>
+    <div class="card">
+      <h2>Gelogd</h2>
+      <div id="meal-list"></div>
+      <p class="sub" id="meal-total"></p>
+    </div>
+  </section>
+
+  <section class="panel" id="p-week" aria-labelledby="t-week" hidden>
+    <div class="card">
+      <div class="weeknav">
+        <button type="button" id="wk-prev" aria-label="Vorige week">←</button>
+        <h2 id="week-label"></h2>
+        <button type="button" id="wk-next" aria-label="Volgende week">→</button>
+      </div>
+      <div class="bars" id="week-bars"></div>
+    </div>
+    <div class="card">
+      <h2>Dagen</h2>
+      <div class="strip" id="week-strip"></div>
+      <p class="sub">Een gevulde stip is een dag waarop je je dagminimum haalde. Tik een dag om hem in te vullen.</p>
+    </div>
+    <details class="card" id="settings-card">
+      <summary>Doelen en weekbudget aanpassen</summary>
+      <div class="fields">
+        <div class="field"><label for="s-steps">Stappendoel per dag</label><input type="number" id="s-steps" inputmode="numeric" min="0" step="100"></div>
+        <div class="field"><label for="s-sleep">Slaapscoredoel</label><input type="number" id="s-sleep" inputmode="numeric" min="0" max="100" step="1"></div>
+        <div class="field"><label for="s-master">Master per week (uur)</label><input type="number" id="s-master" inputmode="decimal" min="0" step="any"></div>
+        <div class="field"><label for="s-project">Project per week (uur)</label><input type="number" id="s-project" inputmode="decimal" min="0" step="any"></div>
+        <div class="field"><label for="s-farsi">Farsi per week (min)</label><input type="number" id="s-farsi" inputmode="numeric" min="0" step="5"></div>
+        <div class="field"><label for="s-spaans">Spaans per week (min)</label><input type="number" id="s-spaans" inputmode="numeric" min="0" step="5"></div>
+        <div class="field"><label for="s-minf">Dagminimum Farsi (min)</label><input type="number" id="s-minf" inputmode="numeric" min="0" step="1"></div>
+        <div class="field"><label for="s-mins">Dagminimum Spaans (min)</label><input type="number" id="s-mins" inputmode="numeric" min="0" step="1"></div>
+        <div class="field"><label for="s-water">Waterdoel per dag (ml)</label><input type="number" id="s-water" inputmode="numeric" min="0" step="50"></div>
+      </div>
+      <p class="sub">Stappen-, slaap- en waterdoel zijn startwaarden. Pas ze aan naar wat jij wilt.</p>
+      <div class="row"><button class="btn" id="save-settings" type="button">Opslaan</button><span class="status" id="settings-status" role="status"></span></div>
+    </details>
+    <details class="card" id="backup-card">
+      <summary>Back-up en gegevens</summary>
+      <p class="sub">Je gegevens staan alleen in deze browser op dit apparaat. Maak daarom af en toe een back-up en bewaar die ergens veilig. Wis je je browsergegevens, dan ben je ze anders kwijt.</p>
+      <p class="status" id="backup-last"></p>
+      <div class="row"><button class="btn" id="btn-export" type="button">Back-up downloaden</button></div>
+      <div class="field"><label for="imp-file">Back-up terugzetten (wordt samengevoegd met wat je al hebt)</label><input type="file" id="imp-file" accept="application/json,.json"></div>
+      <p class="status" id="backup-status" role="status"></p>
+    </details>
+  </section>
+
+  <section class="panel" id="p-trends" aria-labelledby="t-trends" hidden>
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><b id="st-steps">–</b><span>stappen per dag, 7 dagen</span></div>
+        <div class="stat"><b id="st-sleep">–</b><span>slaapscore, 7 dagen</span></div>
+        <div class="stat"><b id="st-work">0</b><span>keer getraind deze maand</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Stappen</h2>
+      <p class="sub">Laatste 28 dagen</p>
+      <div class="chart" id="ch-steps"></div>
+    </div>
+    <div class="card">
+      <h2>Slaapscore</h2>
+      <p class="sub">Laatste 28 dagen</p>
+      <div class="chart" id="ch-sleep"></div>
+    </div>
+    <div class="card">
+      <h2>Water</h2>
+      <p class="sub">Laatste 28 dagen, in ml</p>
+      <div class="chart" id="ch-water"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-money" aria-labelledby="t-money" hidden>
+    <div class="card">
+      <h2>Maand invullen</h2>
+      <div class="field"><label for="m-month">Maand</label><input type="month" id="m-month" pattern="[0-9]{4}-[0-9]{2}" placeholder="2026-10"></div>
+      <div class="fields">
+        <div class="field"><label for="m-income">Inkomsten (€)</label><input type="number" id="m-income" inputmode="decimal" min="0" step="any"></div>
+        <div class="field"><label for="m-expenses">Uitgaven (€)</label><input type="number" id="m-expenses" inputmode="decimal" min="0" step="any"></div>
+        <div class="field"><label for="m-saved">Gespaard of belegd (€)</label><input type="number" id="m-saved" inputmode="decimal" min="0" step="any"></div>
+      </div>
+      <p class="sub">Je cijfers blijven in deze browser op dit apparaat.</p>
+      <div class="row"><button class="btn" id="save-month" type="button">Opslaan</button><span class="status" id="month-status" role="status"></span></div>
+    </div>
+    <div class="card">
+      <h2>Laatste 12 maanden</h2>
+      <div class="legend"><span><i style="background:var(--c-project)"></i>Inkomsten</span><span><i style="background:var(--c-spaans)"></i>Uitgaven</span></div>
+      <div class="chart" id="ch-money"></div>
+      <div class="tablewrap" id="money-table"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-watch" aria-labelledby="t-watch" hidden>
+    <div class="card">
+      <h2>Toevoegen</h2>
+      <div class="field"><label for="w-title">Titel</label><input type="text" id="w-title" maxlength="120" autocomplete="off"></div>
+      <div class="fields">
+        <div class="field"><label for="w-kind">Soort</label><select id="w-kind"><option value="film">Film</option><option value="serie">Serie</option></select></div>
+        <div class="field"><label for="w-status">Status</label><select id="w-status"><option value="wil">Wil ik zien</option><option value="bezig">Bezig</option><option value="gezien">Gezien</option></select></div>
+      </div>
+      <div class="row"><button class="btn" id="add-media" type="button">Toevoegen</button><span class="status" id="watch-status" role="status"></span></div>
+    </div>
+    <div class="card">
+      <p class="sub" id="w-stats"></p>
+      <div class="chips" role="group" aria-label="Filter op status">
+        <button type="button" data-wf="all" aria-pressed="true">Alles</button>
+        <button type="button" data-wf="wil" aria-pressed="false">Wil ik zien</button>
+        <button type="button" data-wf="bezig" aria-pressed="false">Bezig</button>
+        <button type="button" data-wf="gezien" aria-pressed="false">Gezien</button>
+      </div>
+      <div class="field"><label for="w-q">Zoeken</label><input type="search" id="w-q" autocomplete="off"></div>
+      <div id="watch-list"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-read" aria-labelledby="t-read" hidden>
+    <div class="card">
+      <h2>Boek toevoegen</h2>
+      <div class="field"><label for="b-title">Titel</label><input type="text" id="b-title" maxlength="120" autocomplete="off"></div>
+      <div class="fields">
+        <div class="field"><label for="b-author">Auteur</label><input type="text" id="b-author" maxlength="80" autocomplete="off"></div>
+        <div class="field"><label for="b-pages">Aantal pagina’s</label><input type="number" id="b-pages" inputmode="numeric" min="1" step="1"></div>
+        <div class="field"><label for="b-status">Status</label><select id="b-status"><option value="wil">Wil ik lezen</option><option value="lezend">Lees ik nu</option><option value="uit">Uit</option></select></div>
+      </div>
+      <div class="row"><button class="btn" id="add-book" type="button">Toevoegen</button><span class="status" id="read-status" role="status"></span></div>
+    </div>
+    <div class="card">
+      <p class="sub" id="r-stats"></p>
+      <div class="chips" role="group" aria-label="Filter op status">
+        <button type="button" data-rf="all" aria-pressed="true">Alles</button>
+        <button type="button" data-rf="wil" aria-pressed="false">Wil ik lezen</button>
+        <button type="button" data-rf="lezend" aria-pressed="false">Lees ik nu</button>
+        <button type="button" data-rf="uit" aria-pressed="false">Uit</button>
+      </div>
+      <div class="field"><label for="r-q">Zoeken</label><input type="search" id="r-q" autocomplete="off"></div>
+      <div id="read-list"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const pad = (n) => String(n).padStart(2, '0');
+  const ymd = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const fromYmd = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d, 12); };
+  const addDays = (s, n) => { const d = fromYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+  const today = () => ymd(new Date());
+  const monthOf = (s) => s.slice(0, 7);
+  const WD = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
+  const WDL = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'];
+  const MON = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+  const nf = new Intl.NumberFormat('nl-NL', { maximumFractionDigits: 1 });
+  const eur = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const fmtDate = (s) => { const d = fromYmd(s); return WD[d.getDay()] + ' ' + d.getDate() + ' ' + MON[d.getMonth()]; };
+  const mondayOf = (s) => { const d = fromYmd(s); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return ymd(d); };
+  const monthLabel = (m) => MON[Number(m.slice(5, 7)) - 1] + ' ' + m.slice(0, 4);
+
+  // Weekplan from the planning session, keyed by weekday (0 = Sunday).
+  const PLAN = {
+    1: { fixed: 'College 11–13 · werk', sport: 'Sportschool', master: 0, project: 0, farsi: 10, spaans: 10, note: 'Al vol genoeg: alleen je dagminimum.' },
+    2: { fixed: 'Werk (meeting 9:00) · college 11–13', sport: 'Sportschool', master: 0, project: 0, farsi: 10, spaans: 10, note: 'Alleen je dagminimum.' },
+    3: { fixed: 'College 13–15 · rijles 10–12 (sommige weken)', sport: 'Voetbaltraining (avond)', master: 2.5, project: 0, farsi: 10, spaans: 10, note: 'Het ochtendblok vervalt in weken met rijles.' },
+    4: { fixed: 'Rijles 12–14 (sommige weken)', sport: 'Sportschool', master: 3, project: 2, farsi: 40, spaans: 10, note: 'Lang blok, plan het rond de rijles.' },
+    5: { fixed: 'Belmoment met je vader', sport: 'Sportschool', master: 0, project: 3, farsi: 25, spaans: 10, note: '15 minuten Farsi bellen.' },
+    6: { fixed: 'Vrij', sport: 'Rust', master: 2, project: 1, farsi: 10, spaans: 40, note: 'De rest van de dag is vrij.' },
+    0: { fixed: 'Voetbal (training en wedstrijd)', sport: 'Voetbal', master: 0, project: 0, farsi: 10, spaans: 10, note: '20 minuten weekplanning voor volgende week.' },
+  };
+  const GOALS = [
+    { key: 'master_h', label: 'Master AI', unit: 'u', color: 'var(--c-master)' },
+    { key: 'project_h', label: 'AI-automatisering', unit: 'u', color: 'var(--c-project)' },
+    { key: 'farsi_min', label: 'Farsi', unit: 'min', color: 'var(--c-farsi)' },
+    { key: 'spaans_min', label: 'Spaans', unit: 'min', color: 'var(--c-spaans)' },
+  ];
+  const DEF = { step_goal: 8000, sleep_goal: 80, master_h: 7.5, project_h: 6, farsi_min: 115, spaans_min: 100, min_farsi: 10, min_spaans: 10, water_goal: 2500 };
+
+  const state = { col: null, days: {}, months: {}, settings: null, media: [], books: [], wf: 'all', rf: 'all', tab: 'today', date: today(), weekOffset: 0, loaded: false };
+  const cfg = () => Object.assign({}, DEF, state.settings || {});
+  const minMet = (day, c) => !!day && (day.farsi_min || 0) >= c.min_farsi && (day.spaans_min || 0) >= c.min_spaans;
+
+  function streak() {
+    const c = cfg();
+    let d = today();
+    if (!minMet(state.days[d], c)) d = addDays(d, -1);
+    let n = 0;
+    while (minMet(state.days[d], c)) { n++; d = addDays(d, -1); }
+    return n;
+  }
+
+  const val = (id) => $('#' + id).value.trim().replace(',', '.');
+  const numOrNull = (id) => { const v = val(id); if (v === '') return null; const n = Number(v); return isFinite(n) && n >= 0 ? n : NaN; };
+  const setStatus = (id, text) => { $('#' + id).textContent = text; };
+
+  // ---------- tabs ----------
+  function showTab(name) {
+    state.tab = name;
+    $$('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+    ['today', 'food', 'week', 'trends', 'money', 'watch', 'read'].forEach((t) => { $('#p-' + t).hidden = t !== name; });
+    renderAll();
+  }
+  $$('.tabs button').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
+
+  // ---------- today ----------
+  function renderPlan() {
+    const d = fromYmd(state.date);
+    const p = PLAN[d.getDay()];
+    $('#plan-title').textContent = 'Gepland voor ' + WDL[d.getDay()];
+    const line = $('#plan-line');
+    line.replaceChildren();
+    [p.fixed, p.sport].forEach((t) => { const s = document.createElement('span'); s.textContent = t; line.appendChild(s); });
+    const blocks = $('#plan-blocks');
+    blocks.replaceChildren();
+    const add = (color, text) => {
+      const c = document.createElement('span'); c.className = 'chip';
+      const i = document.createElement('i'); i.style.background = color;
+      c.appendChild(i); c.appendChild(document.createTextNode(text)); blocks.appendChild(c);
+    };
+    if (p.master) add(GOALS[0].color, 'Master ' + nf.format(p.master) + ' u');
+    if (p.project) add(GOALS[1].color, 'Project ' + nf.format(p.project) + ' u');
+    add(GOALS[2].color, 'Farsi ' + p.farsi + ' min');
+    add(GOALS[3].color, 'Spaans ' + p.spaans + ' min');
+    $('#plan-note').textContent = p.note;
+  }
+
+  function renderBadges() {
+    const c = cfg();
+    const f = Number(val('f-farsi')) || 0, s = Number(val('f-spaans')) || 0;
+    const box = $('#min-badges');
+    box.replaceChildren();
+    [['Farsi ' + c.min_farsi + ' min', f >= c.min_farsi], ['Spaans ' + c.min_spaans + ' min', s >= c.min_spaans]].forEach(([t, on]) => {
+      const e = document.createElement('span'); e.textContent = t; if (on) e.className = 'on'; box.appendChild(e);
+    });
+  }
+
+  function fillDayForm() {
+    const v = state.days[state.date] || {};
+    $('#f-date').value = state.date;
+    [['f-steps', 'steps'], ['f-sleep', 'sleep'], ['f-master', 'master_h'], ['f-project', 'project_h'], ['f-farsi', 'farsi_min'], ['f-spaans', 'spaans_min']]
+      .forEach(([id, k]) => { $('#' + id).value = v[k] == null ? '' : v[k]; });
+    $('#f-workout').checked = !!v.workout;
+    $('#f-note').value = v.note || '';
+    setStatus('day-status', state.days[state.date] ? 'Eerder opgeslagen' : '');
+    renderBadges();
+    renderPlan();
+  }
+
+  $('#f-date').addEventListener('change', (e) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) return;
+    state.date = e.target.value;
+    fillDayForm();
+  });
+  ['f-farsi', 'f-spaans'].forEach((id) => $('#' + id).addEventListener('input', renderBadges));
+  $$('.num button').forEach((b) => b.addEventListener('click', () => {
+    const inp = $('#' + b.dataset.for);
+    const cur = Number(inp.value.replace(',', '.')) || 0;
+    let nv = Math.max(0, Math.round((cur + Number(b.dataset.step)) * 100) / 100);
+    if (b.dataset.for === 'f-sleep') nv = Math.min(100, nv);
+    inp.value = nv;
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  }));
+
+  $('#save-day').addEventListener('click', async () => {
+    const data = Object.assign({}, state.days[state.date] || {}, {
+      type: 'day', date: state.date,
+      steps: numOrNull('f-steps'), sleep: numOrNull('f-sleep'), master_h: numOrNull('f-master'), project_h: numOrNull('f-project'),
+      farsi_min: numOrNull('f-farsi'), spaans_min: numOrNull('f-spaans'),
+      workout: $('#f-workout').checked, note: $('#f-note').value.trim(), updated: Date.now(),
+    });
+    if (['steps', 'sleep', 'master_h', 'project_h', 'farsi_min', 'spaans_min'].some((k) => Number.isNaN(data[k]))) { setStatus('day-status', 'Vul alleen getallen van 0 of hoger in.'); return; }
+    if (data.sleep != null && data.sleep > 100) { setStatus('day-status', 'De slaapscore loopt van 0 tot 100.'); return; }
+    const btn = $('#save-day'); btn.disabled = true; setStatus('day-status', 'Bezig met opslaan…');
+    try { await persist('day', data); setStatus('day-status', 'Opgeslagen voor ' + fmtDate(state.date)); }
+    catch (e) { setStatus('day-status', 'Opslaan mislukt (' + ((e && e.code) || 'onbekend') + '). Probeer het zo nog eens.'); }
+    finally { btn.disabled = false; }
+  });
+
+  // ---------- week ----------
+  function weekStart() { return addDays(mondayOf(today()), state.weekOffset * 7); }
+
+  function renderWeek() {
+    const c = cfg(), start = weekStart();
+    $('#week-label').textContent = fmtDate(start) + ' – ' + fmtDate(addDays(start, 6));
+    $('#wk-next').disabled = state.weekOffset >= 0;
+    const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
+    const tot = { master_h: 0, project_h: 0, farsi_min: 0, spaans_min: 0 };
+    days.forEach((d) => { const v = state.days[d]; if (v) Object.keys(tot).forEach((k) => { tot[k] += v[k] || 0; }); });
+    const bars = $('#week-bars');
+    bars.replaceChildren();
+    GOALS.forEach((g) => {
+      const budget = c[g.key], done = tot[g.key];
+      const row = document.createElement('div'); row.className = 'goalrow';
+      const hd = document.createElement('div'); hd.className = 'hd';
+      const a = document.createElement('span'); a.textContent = g.label;
+      const b = document.createElement('span');
+      b.textContent = nf.format(Math.round(done * 10) / 10) + ' / ' + nf.format(budget) + ' ' + g.unit;
+      hd.appendChild(a); hd.appendChild(b);
+      const tr = document.createElement('div'); tr.className = 'track';
+      const fill = document.createElement('i');
+      fill.style.width = (budget > 0 ? Math.min(100, (done / budget) * 100) : 0) + '%';
+      fill.style.background = g.color;
+      tr.appendChild(fill); row.appendChild(hd); row.appendChild(tr); bars.appendChild(row);
+    });
+    const strip = $('#week-strip');
+    strip.replaceChildren();
+    const t0 = today();
+    days.forEach((d) => {
+      const v = state.days[d];
+      const btn = document.createElement('button'); btn.type = 'button';
+      btn.className = (d === t0 ? 'today ' : '') + (d > t0 ? 'future' : '');
+      const w = document.createElement('span'); w.textContent = WD[fromYmd(d).getDay()] + ' ' + fromYmd(d).getDate();
+      const dot = document.createElement('span'); dot.className = 'dot' + (minMet(v, c) ? ' on' : '');
+      const st = document.createElement('small'); st.textContent = v && v.steps != null ? nf.format(v.steps) : '–';
+      btn.appendChild(w); btn.appendChild(dot); btn.appendChild(st);
+      btn.addEventListener('click', () => { state.date = d; fillDayForm(); showTab('today'); });
+      strip.appendChild(btn);
+    });
+  }
+  $('#wk-prev').addEventListener('click', () => { state.weekOffset -= 1; renderWeek(); });
+  $('#wk-next').addEventListener('click', () => { if (state.weekOffset < 0) { state.weekOffset += 1; renderWeek(); } });
+
+  function fillSettings() {
+    const c = cfg();
+    [['s-steps', 'step_goal'], ['s-sleep', 'sleep_goal'], ['s-master', 'master_h'], ['s-project', 'project_h'], ['s-farsi', 'farsi_min'], ['s-spaans', 'spaans_min'], ['s-minf', 'min_farsi'], ['s-mins', 'min_spaans'], ['s-water', 'water_goal']]
+      .forEach(([id, k]) => { $('#' + id).value = c[k]; });
+  }
+  $('#save-settings').addEventListener('click', async () => {
+    const map = [['s-steps', 'step_goal'], ['s-sleep', 'sleep_goal'], ['s-master', 'master_h'], ['s-project', 'project_h'], ['s-farsi', 'farsi_min'], ['s-spaans', 'spaans_min'], ['s-minf', 'min_farsi'], ['s-mins', 'min_spaans'], ['s-water', 'water_goal']];
+    const data = { type: 'settings' };
+    for (const [id, k] of map) {
+      const n = numOrNull(id);
+      if (n == null || Number.isNaN(n)) { setStatus('settings-status', 'Vul bij elk doel een getal van 0 of hoger in.'); return; }
+      data[k] = n;
+    }
+    if (data.sleep_goal > 100) { setStatus('settings-status', 'De slaapscore loopt van 0 tot 100.'); return; }
+    const btn = $('#save-settings'); btn.disabled = true; setStatus('settings-status', 'Bezig met opslaan…');
+    try { await persist('settings', data); setStatus('settings-status', 'Opgeslagen'); }
+    catch (e) { setStatus('settings-status', 'Opslaan mislukt (' + ((e && e.code) || 'onbekend') + ').'); }
+    finally { btn.disabled = false; }
+  });
+
+  // ---------- charts ----------
+  const NS = 'http://www.w3.org/2000/svg';
+  function mk(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach((k) => e.setAttribute(k, attrs[k]));
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function emptyNote(host, text) {
+    host.replaceChildren();
+    const p = document.createElement('p'); p.className = 'empty'; p.textContent = text; host.appendChild(p);
+  }
+  // items: [{k: axis label, vs: [numbers|null], t: readout text}]
+  function drawBars(host, items, o) {
+    host.replaceChildren();
+    const all = items.flatMap((i) => i.vs).filter((v) => v != null);
+    if (!all.length) { emptyNote(host, o.empty); return; }
+    const W = host.clientWidth || 320, H = 150, ml = 6, mr = 6, mt = 14, mb = 20;
+    const max = Math.max(...all, o.goal || 0) * 1.1 || 1;
+    const step = (W - ml - mr) / items.length, gw = step * 0.72, n = items[0].vs.length, bw = gw / n;
+    const svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, width: '100%', role: 'img', 'aria-label': o.label }, host);
+    mk('line', { x1: ml, x2: W - mr, y1: H - mb, y2: H - mb, class: 'axis' }, svg);
+    if (o.goal) {
+      const y = H - mb - (o.goal / max) * (H - mb - mt);
+      mk('line', { x1: ml, x2: W - mr, y1: y, y2: y, class: 'ref' }, svg);
+      const t = mk('text', { x: W - mr, y: y - 3, 'text-anchor': 'end', class: 'lab' }, svg); t.textContent = o.goalLabel;
+    }
+    items.forEach((it, i) => {
+      it.vs.forEach((v, j) => {
+        if (v == null) return;
+        const h = (v / max) * (H - mb - mt);
+        mk('rect', { x: ml + i * step + (step - gw) / 2 + j * bw, y: H - mb - h, width: Math.max(2, bw - (n > 1 ? 1 : 0)), height: Math.max(1, h), rx: 2, class: o.cls[j] }, svg);
+      });
+      if (i % o.every === 0) { const t = mk('text', { x: ml + i * step + step / 2, y: H - 6, 'text-anchor': 'middle', class: 'lab' }, svg); t.textContent = it.k; }
+    });
+    attachReadout(host, svg, items, W, H, ml, step, o.summary);
+  }
+  function drawLine(host, items, o) {
+    host.replaceChildren();
+    const pts = items.map((it, i) => ({ i, v: it.vs[0], it })).filter((p) => p.v != null);
+    if (!pts.length) { emptyNote(host, o.empty); return; }
+    const W = host.clientWidth || 320, H = 150, ml = 6, mr = 6, mt = 14, mb = 20;
+    const step = (W - ml - mr) / items.length;
+    const X = (i) => ml + i * step + step / 2, Y = (v) => H - mb - (v / 100) * (H - mb - mt);
+    const svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, width: '100%', role: 'img', 'aria-label': o.label }, host);
+    mk('line', { x1: ml, x2: W - mr, y1: H - mb, y2: H - mb, class: 'axis' }, svg);
+    if (o.goal) {
+      mk('line', { x1: ml, x2: W - mr, y1: Y(o.goal), y2: Y(o.goal), class: 'ref' }, svg);
+      const t = mk('text', { x: W - mr, y: Y(o.goal) - 3, 'text-anchor': 'end', class: 'lab' }, svg); t.textContent = o.goalLabel;
+    }
+    if (pts.length > 1) mk('path', { d: pts.map((p, k) => (k ? 'L' : 'M') + X(p.i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' '), class: 'ln' }, svg);
+    pts.forEach((p) => mk('circle', { cx: X(p.i), cy: Y(p.v), r: 3, class: 'pt' }, svg));
+    items.forEach((it, i) => { if (i % o.every === 0) { const t = mk('text', { x: X(i), y: H - 6, 'text-anchor': 'middle', class: 'lab' }, svg); t.textContent = it.k; } });
+    attachReadout(host, svg, items, W, H, ml, step, o.summary);
+  }
+  function attachReadout(host, svg, items, W, H, ml, step, summary) {
+    const ro = document.createElement('p'); ro.className = 'readout'; ro.textContent = summary; host.appendChild(ro);
+    const hit = mk('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' }, svg);
+    const move = (ev) => {
+      const r = svg.getBoundingClientRect();
+      const x = (ev.clientX - r.left) * (W / r.width);
+      const idx = Math.max(0, Math.min(items.length - 1, Math.floor((x - ml) / step)));
+      ro.textContent = items[idx].t;
+    };
+    hit.addEventListener('pointermove', move);
+    hit.addEventListener('pointerdown', move);
+  }
+  const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+
+  function renderTrends() {
+    const c = cfg(), t = today();
+    const days = Array.from({ length: 28 }, (_, i) => addDays(t, i - 27));
+    const lab = (d) => fromYmd(d).getDate() + ' ' + MON[fromYmd(d).getMonth()];
+    const stepItems = days.map((d) => { const v = state.days[d]; const s = v && v.steps != null ? v.steps : null; return { k: lab(d), vs: [s], t: fmtDate(d) + ': ' + (s == null ? 'niets gelogd' : nf.format(s) + ' stappen') }; });
+    const sleepItems = days.map((d) => { const v = state.days[d]; const s = v && v.sleep != null ? v.sleep : null; return { k: lab(d), vs: [s], t: fmtDate(d) + ': ' + (s == null ? 'niets gelogd' : 'slaapscore ' + nf.format(s)) }; });
+    const last7 = days.slice(-7);
+    const a7 = avg(last7.map((d) => (state.days[d] || {}).steps).filter((v) => v != null));
+    const s7 = avg(last7.map((d) => (state.days[d] || {}).sleep).filter((v) => v != null));
+    $('#st-steps').textContent = a7 == null ? '–' : nf.format(Math.round(a7));
+    $('#st-sleep').textContent = s7 == null ? '–' : nf.format(Math.round(s7));
+    const ym = monthOf(t);
+    $('#st-work').textContent = String(Object.keys(state.days).filter((d) => monthOf(d) === ym && state.days[d].workout).length);
+    drawBars($('#ch-steps'), stepItems, {
+      label: 'Stappen per dag, laatste 28 dagen', goal: c.step_goal, goalLabel: 'doel ' + nf.format(c.step_goal), cls: ['steps'], every: 7,
+      summary: a7 == null ? '' : 'Gemiddeld ' + nf.format(Math.round(a7)) + ' stappen per gelogde dag deze week. Tik of beweeg over een dag.',
+      empty: 'Nog geen stappen gelogd. Vul op Vandaag je stappen in en je grafiek verschijnt hier.',
+    });
+    drawLine($('#ch-sleep'), sleepItems, {
+      label: 'Slaapscore per nacht, laatste 28 dagen', goal: c.sleep_goal, goalLabel: 'doel ' + nf.format(c.sleep_goal), every: 7,
+      summary: s7 == null ? '' : 'Gemiddeld ' + nf.format(Math.round(s7)) + ' deze week. Tik of beweeg over een dag.',
+      empty: 'Nog geen slaapscores gelogd. Vul op Vandaag je slaapscore in.',
+    });
+    const waterItems = days.map((d) => { const v = state.days[d]; const s = v && v.water_ml ? v.water_ml : null; return { k: lab(d), vs: [s], t: fmtDate(d) + ': ' + (s == null ? 'niets gelogd' : nf.format(s) + ' ml') }; });
+    drawBars($('#ch-water'), waterItems, {
+      label: 'Water per dag, laatste 28 dagen', goal: c.water_goal, goalLabel: 'doel ' + nf.format(c.water_goal), cls: ['s2'], every: 7,
+      summary: 'Tik of beweeg over een dag.', empty: 'Nog geen water gelogd. Doe dat op het tabblad Eten.',
+    });
+  }
+
+  // ---------- money ----------
+  function fillMonthForm() {
+    const m = $('#m-month').value, v = state.months[m] || {};
+    [['m-income', 'income'], ['m-expenses', 'expenses'], ['m-saved', 'saved']].forEach(([id, k]) => { $('#' + id).value = v[k] == null ? '' : v[k]; });
+    setStatus('month-status', state.months[m] ? 'Eerder opgeslagen' : '');
+  }
+  $('#m-month').addEventListener('change', () => { if (/^\d{4}-\d{2}$/.test($('#m-month').value)) fillMonthForm(); });
+  $('#save-month').addEventListener('click', async () => {
+    const m = $('#m-month').value;
+    if (!/^\d{4}-\d{2}$/.test(m)) { setStatus('month-status', 'Kies eerst een maand.'); return; }
+    const data = { type: 'month', month: m, income: numOrNull('m-income'), expenses: numOrNull('m-expenses'), saved: numOrNull('m-saved'), updated: Date.now() };
+    if (['income', 'expenses', 'saved'].some((k) => Number.isNaN(data[k]))) { setStatus('month-status', 'Vul alleen bedragen van 0 of hoger in.'); return; }
+    const btn = $('#save-month'); btn.disabled = true; setStatus('month-status', 'Bezig met opslaan…');
+    try { await persist('month', data); setStatus('month-status', 'Opgeslagen voor ' + monthLabel(m)); }
+    catch (e) { setStatus('month-status', 'Opslaan mislukt (' + ((e && e.code) || 'onbekend') + ').'); }
+    finally { btn.disabled = false; }
+  });
+
+  function renderMoney() {
+    const now = new Date();
+    const months = Array.from({ length: 12 }, (_, i) => { const d = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1, 12); return d.getFullYear() + '-' + pad(d.getMonth() + 1); });
+    const items = months.map((m) => {
+      const v = state.months[m] || {};
+      const inc = v.income == null ? null : v.income, exp = v.expenses == null ? null : v.expenses;
+      return { k: MON[Number(m.slice(5)) - 1], vs: [inc, exp], t: monthLabel(m) + ': inkomsten ' + (inc == null ? '–' : eur.format(inc)) + ', uitgaven ' + (exp == null ? '–' : eur.format(exp)) };
+    });
+    drawBars($('#ch-money'), items, {
+      label: 'Inkomsten en uitgaven per maand', cls: ['s0', 's1'], every: 1,
+      summary: 'Tik of beweeg over een maand.', empty: 'Nog geen maanden ingevuld. Kies hierboven een maand en vul je bedragen in.',
+    });
+    const wrap = $('#money-table');
+    wrap.replaceChildren();
+    const rows = Object.keys(state.months).sort().reverse().slice(0, 12);
+    if (!rows.length) return;
+    const tbl = document.createElement('table');
+    const head = tbl.createTHead().insertRow();
+    ['Maand', 'Inkomsten', 'Uitgaven', 'Gespaard', 'Quote'].forEach((h) => { const th = document.createElement('th'); th.textContent = h; head.appendChild(th); });
+    const body = tbl.createTBody();
+    rows.forEach((m) => {
+      const v = state.months[m], tr = body.insertRow();
+      const q = v.income > 0 && v.saved != null ? Math.round((v.saved / v.income) * 100) + '%' : '–';
+      [monthLabel(m), v.income == null ? '–' : eur.format(v.income), v.expenses == null ? '–' : eur.format(v.expenses), v.saved == null ? '–' : eur.format(v.saved), q]
+        .forEach((t) => { tr.insertCell().textContent = t; });
+    });
+    wrap.appendChild(tbl);
+  }
+
+  // ---------- render ----------
+  function renderAll() {
+    $('#today-label').textContent = WDL[new Date().getDay()] + ' ' + new Date().getDate() + ' ' + MON[new Date().getMonth()];
+    $('#streak-n').textContent = String(streak());
+    if (state.tab === 'week') renderWeek();
+    if (state.tab === 'trends') renderTrends();
+    if (state.tab === 'money') renderMoney();
+    if (state.tab === 'food') renderFood();
+    if (state.tab === 'watch') renderWatch();
+    if (state.tab === 'read') renderRead();
+    if (state.tab === 'today') renderBadges();
+  }
+  let rz = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(renderAll); });
+
+  // ---------- storage (this browser only) ----------
+  const KEY = 'lifemaxxing.v1';
+  let lastExport = null;
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const ID = /^[a-z0-9]{3,40}$/i;
+  const DATE = /^\d{4}-\d{2}-\d{2}$/;
+  function notice(t) { const n = $('#notice'); n.textContent = t; n.hidden = !t; }
+  function storageWorks() {
+    try { localStorage.setItem(KEY + '.t', '1'); localStorage.removeItem(KEY + '.t'); return true; } catch (e) { return false; }
+  }
+  const dataObj = () => ({ v: 2, days: state.days, months: state.months, settings: state.settings, media: state.media, books: state.books, lastExport });
+  function persistAll() { localStorage.setItem(KEY, JSON.stringify(dataObj())); }
+  async function commit(fn) {
+    const snap = JSON.stringify(dataObj());
+    fn();
+    try { persistAll(); }
+    catch (e) {
+      const o = JSON.parse(snap);
+      state.days = o.days; state.months = o.months; state.settings = o.settings; state.media = o.media; state.books = o.books;
+      throw e;
+    }
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+    renderAll(); renderBackup();
+  }
+  async function persist(kind, data) {
+    return commit(() => {
+      if (kind === 'day') state.days[data.date] = data;
+      else if (kind === 'month') state.months[data.month] = data;
+      else state.settings = data;
+    });
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      const o = JSON.parse(raw);
+      state.days = o.days || {}; state.months = o.months || {}; state.settings = o.settings || null;
+      state.media = Array.isArray(o.media) ? o.media : []; state.books = Array.isArray(o.books) ? o.books : [];
+      lastExport = o.lastExport || null;
+    } catch (e) { notice('Je opgeslagen gegevens konden niet worden gelezen. Zet een back-up terug als je er een hebt.'); }
+  }
+
+  // ---------- small DOM helpers ----------
+  function E(tag, o, ...kids) {
+    const e = document.createElement(tag);
+    if (o) Object.keys(o).forEach((k) => {
+      if (k === 'class') e.className = o[k];
+      else if (k === 'text') e.textContent = o[k];
+      else e.setAttribute(k, o[k]);
+    });
+    kids.forEach((x) => { if (x) e.appendChild(typeof x === 'string' ? document.createTextNode(x) : x); });
+    return e;
+  }
+  function selectEl(options, value, onchange, label) {
+    const s = E('select', { 'aria-label': label });
+    options.forEach(([v, t]) => s.appendChild(E('option', { value: v, text: t })));
+    s.value = value;
+    s.addEventListener('change', () => onchange(s.value));
+    return s;
+  }
+  function delBtn(label, onConfirm) {
+    const b = E('button', { type: 'button', class: 'mini', text: 'Verwijder', 'aria-label': label });
+    let t = 0;
+    b.addEventListener('click', () => {
+      if (!t) { b.textContent = 'Zeker?'; t = setTimeout(() => { b.textContent = 'Verwijder'; t = 0; }, 4000); }
+      else { clearTimeout(t); onConfirm(); }
+    });
+    return b;
+  }
+  async function guard(statusId, promise, okText) {
+    try { await promise; setStatus(statusId, okText || ''); return true; }
+    catch (e) { setStatus(statusId, 'Opslaan mislukt. Probeer het zo nog eens.'); return false; }
+  }
+  const RATING = [['', 'Geen cijfer'], ['1', '1 van 5'], ['2', '2 van 5'], ['3', '3 van 5'], ['4', '4 van 5'], ['5', '5 van 5']];
+  const ratingValue = (r) => (r == null ? '' : String(r));
+  const thisYear = () => String(new Date().getFullYear());
+
+  // ---------- food and water ----------
+  const MEALS = [['ontbijt', 'Ontbijt'], ['lunch', 'Lunch'], ['diner', 'Diner'], ['snack', 'Snack']];
+  function updateDay(date, fn) {
+    return commit(() => {
+      const cur = Object.assign({ type: 'day', date }, state.days[date] || {});
+      fn(cur);
+      cur.updated = Date.now();
+      state.days[date] = cur;
+    });
+  }
+  function shiftDate(n) { state.date = addDays(state.date, n); fillDayForm(); renderAll(); }
+  $('#food-prev').addEventListener('click', () => shiftDate(-1));
+  $('#food-next').addEventListener('click', () => { if (state.date < today()) shiftDate(1); });
+  $$('[data-ml]').forEach((b) => b.addEventListener('click', () => {
+    guard('food-status', updateDay(state.date, (r) => { r.water_ml = Math.max(0, (r.water_ml || 0) + Number(b.dataset.ml)); }));
+  }));
+  $('#add-meal').addEventListener('click', async () => {
+    const text = $('#e-text').value.trim();
+    if (!text) { setStatus('food-status', 'Vul in wat je hebt gegeten.'); return; }
+    const kcal = numOrNull('e-kcal'), prot = numOrNull('e-prot');
+    if (Number.isNaN(kcal) || Number.isNaN(prot)) { setStatus('food-status', 'Calorieën en eiwit zijn getallen van 0 of hoger. Laat ze anders leeg.'); return; }
+    const m = { id: uid(), meal: $('#e-meal').value, text: text.slice(0, 120), kcal, protein: prot };
+    const ok = await guard('food-status', updateDay(state.date, (r) => { r.meals = (r.meals || []).concat([m]); }), 'Toegevoegd');
+    if (ok) { $('#e-text').value = ''; $('#e-kcal').value = ''; $('#e-prot').value = ''; }
+  });
+  function renderFood() {
+    const c = cfg(), d = state.date, rec = state.days[d] || {};
+    $('#food-label').textContent = (d === today() ? 'Vandaag, ' : '') + fmtDate(d);
+    $('#food-next').disabled = d >= today();
+    const ml = rec.water_ml || 0;
+    $('#water-now').textContent = nf.format(ml);
+    $('#water-goal').textContent = nf.format(c.water_goal);
+    $('#water-fill').style.width = (c.water_goal > 0 ? Math.min(100, (ml / c.water_goal) * 100) : 0) + '%';
+    const list = $('#meal-list');
+    list.replaceChildren();
+    const meals = rec.meals || [];
+    if (!meals.length) list.appendChild(E('p', { class: 'empty', text: 'Nog niets gelogd voor deze dag.' }));
+    MEALS.forEach(([k, label]) => {
+      const items = meals.filter((m) => m.meal === k);
+      if (!items.length) return;
+      list.appendChild(E('h3', { class: 'grp', text: label }));
+      items.forEach((m) => {
+        const bits = [m.kcal != null ? nf.format(m.kcal) + ' kcal' : null, m.protein != null ? nf.format(m.protein) + ' g eiwit' : null].filter(Boolean).join(' · ');
+        list.appendChild(E('div', { class: 'meal' },
+          E('div', { class: 'grow' }, E('span', { text: m.text }), bits ? E('span', { class: 'sub', text: bits }) : null),
+          delBtn('Verwijder ' + m.text, () => guard('food-status', updateDay(d, (r) => { r.meals = (r.meals || []).filter((x) => x.id !== m.id); })))));
+      });
+    });
+    const kc = meals.filter((m) => m.kcal != null), pr = meals.filter((m) => m.protein != null);
+    const parts = [];
+    if (kc.length) parts.push(nf.format(kc.reduce((a, m) => a + m.kcal, 0)) + ' kcal');
+    if (pr.length) parts.push(nf.format(pr.reduce((a, m) => a + m.protein, 0)) + ' g eiwit');
+    $('#meal-total').textContent = parts.length ? 'Samen: ' + parts.join(' · ') + ' (alleen wat je hebt ingevuld)' : '';
+  }
+
+  // ---------- films and series ----------
+  const M_STATUS = [['wil', 'Wil ik zien'], ['bezig', 'Bezig'], ['gezien', 'Gezien']];
+  const updateItem = (arr, id, fn, statusId) => guard(statusId, commit(() => {
+    const it = state[arr].find((x) => x.id === id);
+    if (it) { fn(it); it.updated = Date.now(); }
+  }));
+  const removeItem = (arr, id, statusId) => guard(statusId, commit(() => { state[arr] = state[arr].filter((x) => x.id !== id); }));
+  $$('[data-wf]').forEach((b) => b.addEventListener('click', () => { state.wf = b.dataset.wf; renderWatch(); }));
+  $$('[data-rf]').forEach((b) => b.addEventListener('click', () => { state.rf = b.dataset.rf; renderRead(); }));
+  $('#w-q').addEventListener('input', () => renderWatch());
+  $('#r-q').addEventListener('input', () => renderRead());
+  $('#add-media').addEventListener('click', async () => {
+    const title = $('#w-title').value.trim();
+    if (!title) { setStatus('watch-status', 'Vul eerst een titel in.'); return; }
+    const status = $('#w-status').value;
+    const it = { id: uid(), kind: $('#w-kind').value, title: title.slice(0, 120), status, rating: null, progress: '', finished: status === 'gezien' ? today() : null, note: '', updated: Date.now() };
+    const ok = await guard('watch-status', commit(() => { state.media.push(it); }), 'Toegevoegd');
+    if (ok) $('#w-title').value = '';
+  });
+  function renderWatch() {
+    $$('[data-wf]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.wf === state.wf)));
+    const q = $('#w-q').value.trim().toLowerCase();
+    const order = { bezig: 0, wil: 1, gezien: 2 };
+    const items = state.media
+      .filter((m) => (state.wf === 'all' || m.status === state.wf) && (!q || m.title.toLowerCase().includes(q)))
+      .sort((a, b) => order[a.status] - order[b.status] || b.updated - a.updated);
+    const seen = state.media.filter((m) => m.status === 'gezien' && (m.finished || '').startsWith(thisYear()));
+    $('#w-stats').textContent = 'Gezien in ' + thisYear() + ': ' + seen.filter((m) => m.kind === 'film').length + ' films en ' + seen.filter((m) => m.kind === 'serie').length + ' series.';
+    const list = $('#watch-list');
+    list.replaceChildren();
+    if (!items.length) list.appendChild(E('p', { class: 'empty', text: state.media.length ? 'Niets gevonden met dit filter.' : 'Nog niets op je lijst. Voeg hierboven je eerste film of serie toe.' }));
+    items.forEach((m) => {
+      const ctl = E('div', { class: 'ictl' },
+        selectEl(M_STATUS, m.status, (v) => updateItem('media', m.id, (it) => { it.status = v; if (v === 'gezien' && !it.finished) it.finished = today(); if (v !== 'gezien') it.finished = null; }, 'watch-status'), 'Status van ' + m.title),
+        selectEl(RATING, ratingValue(m.rating), (v) => updateItem('media', m.id, (it) => { it.rating = v === '' ? null : Number(v); }, 'watch-status'), 'Cijfer voor ' + m.title));
+      if (m.kind === 'serie') {
+        const p = E('input', { type: 'text', maxlength: '40', placeholder: 'Seizoen en aflevering', 'aria-label': 'Voortgang van ' + m.title });
+        p.value = m.progress || '';
+        p.addEventListener('change', () => updateItem('media', m.id, (it) => { it.progress = p.value.trim().slice(0, 40); }, 'watch-status'));
+        ctl.appendChild(p);
+      }
+      ctl.appendChild(delBtn('Verwijder ' + m.title, () => removeItem('media', m.id, 'watch-status')));
+      list.appendChild(E('div', { class: 'item' },
+        E('div', { class: 'ihead' }, E('b', { text: m.title }),
+          E('span', { class: 'sub', text: (m.kind === 'film' ? 'Film' : 'Serie') + (m.status === 'gezien' && m.finished ? ' · gezien op ' + fmtDate(m.finished) : '') })),
+        ctl));
+    });
+  }
+
+  // ---------- books ----------
+  const B_STATUS = [['wil', 'Wil ik lezen'], ['lezend', 'Lees ik nu'], ['uit', 'Uit']];
+  $('#add-book').addEventListener('click', async () => {
+    const title = $('#b-title').value.trim();
+    if (!title) { setStatus('read-status', 'Vul eerst een titel in.'); return; }
+    const pages = numOrNull('b-pages');
+    if (Number.isNaN(pages)) { setStatus('read-status', 'Het aantal pagina’s is een getal van 0 of hoger. Laat het anders leeg.'); return; }
+    const status = $('#b-status').value;
+    const it = { id: uid(), title: title.slice(0, 120), author: $('#b-author').value.trim().slice(0, 80), pages: pages || null, page: status === 'uit' ? (pages || 0) : 0, status, rating: null, finished: status === 'uit' ? today() : null, note: '', updated: Date.now() };
+    const ok = await guard('read-status', commit(() => { state.books.push(it); }), 'Toegevoegd');
+    if (ok) { $('#b-title').value = ''; $('#b-author').value = ''; $('#b-pages').value = ''; }
+  });
+  function renderRead() {
+    $$('[data-rf]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.rf === state.rf)));
+    const q = $('#r-q').value.trim().toLowerCase();
+    const order = { lezend: 0, wil: 1, uit: 2 };
+    const items = state.books
+      .filter((m) => (state.rf === 'all' || m.status === state.rf) && (!q || (m.title + ' ' + m.author).toLowerCase().includes(q)))
+      .sort((a, b) => order[a.status] - order[b.status] || b.updated - a.updated);
+    const done = state.books.filter((m) => m.status === 'uit' && (m.finished || '').startsWith(thisYear()));
+    const pg = done.reduce((a, m) => a + (m.pages || 0), 0);
+    $('#r-stats').textContent = 'Uit in ' + thisYear() + ': ' + done.length + ' boeken' + (pg ? ', samen ' + nf.format(pg) + ' pagina’s' : '') + '.';
+    const list = $('#read-list');
+    list.replaceChildren();
+    if (!items.length) list.appendChild(E('p', { class: 'empty', text: state.books.length ? 'Niets gevonden met dit filter.' : 'Nog geen boeken. Voeg hierboven je eerste boek toe.' }));
+    items.forEach((m) => {
+      const ctl = E('div', { class: 'ictl' },
+        selectEl(B_STATUS, m.status, (v) => updateItem('books', m.id, (it) => {
+          it.status = v;
+          if (v === 'uit') { if (!it.finished) it.finished = today(); if (it.pages) it.page = it.pages; }
+          else it.finished = null;
+        }, 'read-status'), 'Status van ' + m.title),
+        selectEl(RATING, ratingValue(m.rating), (v) => updateItem('books', m.id, (it) => { it.rating = v === '' ? null : Number(v); }, 'read-status'), 'Cijfer voor ' + m.title));
+      if (m.status === 'lezend') {
+        const p = E('input', { type: 'number', inputmode: 'numeric', min: '0', step: '1', placeholder: 'Pagina', 'aria-label': 'Pagina waar je bent in ' + m.title });
+        p.value = m.page || '';
+        p.addEventListener('change', () => {
+          const n = Number(p.value);
+          if (!isFinite(n) || n < 0) return;
+          updateItem('books', m.id, (it) => { it.page = Math.floor(n); }, 'read-status');
+        });
+        ctl.appendChild(p);
+      }
+      ctl.appendChild(delBtn('Verwijder ' + m.title, () => removeItem('books', m.id, 'read-status')));
+      const kids = [E('div', { class: 'ihead' }, E('b', { text: m.title }),
+        E('span', { class: 'sub', text: [m.author, m.pages ? m.pages + ' pagina’s' : null, m.status === 'uit' && m.finished ? 'uit op ' + fmtDate(m.finished) : null].filter(Boolean).join(' · ') }))];
+      if (m.status === 'lezend' && m.pages) {
+        const pct = Math.min(100, Math.round(((m.page || 0) / m.pages) * 100));
+        kids.push(E('div', { class: 'goalrow' },
+          E('div', { class: 'hd' }, E('span', { text: 'Pagina ' + (m.page || 0) + ' van ' + m.pages }), E('span', { text: pct + '%' })),
+          E('div', { class: 'track' }, E('i', { style: 'width:' + pct + '%;background:var(--c-farsi)' }))));
+      }
+      kids.push(ctl);
+      list.appendChild(E('div', { class: 'item' }, ...kids));
+    });
+  }
+
+  // ---------- back-up ----------
+  function renderBackup() {
+    const has = Object.keys(state.days).length + Object.keys(state.months).length + state.media.length + state.books.length > 0;
+    $('#backup-last').textContent = lastExport
+      ? 'Laatste back-up: ' + fmtDate(ymd(new Date(lastExport)))
+      : 'Je hebt nog geen back-up gemaakt.';
+    const old = !lastExport || (Date.now() - new Date(lastExport).getTime()) > 14 * 86400000;
+    if (storageWorks()) notice(has && old ? 'Je gegevens staan alleen in deze browser. Maak een back-up onder Week, Back-up en gegevens.' : '');
+    else notice('Deze browser laat geen opslag toe (een privévenster?). Wat je invult blijft niet bewaard.');
+  }
+
+  $('#btn-export').addEventListener('click', () => {
+    const payload = { app: 'lifemaxxing', v: 2, exported: new Date().toISOString(), days: state.days, months: state.months, settings: state.settings, media: state.media, books: state.books };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'lifemaxxing-backup-' + today() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    lastExport = new Date().toISOString();
+    try { persistAll(); } catch (e) { /* the download still happened */ }
+    renderBackup();
+    setStatus('backup-status', 'Back-up gedownload. Bewaar het bestand op een veilige plek.');
+  });
+
+  const cleanNum = (v) => (typeof v === 'number' && isFinite(v) && v >= 0 ? v : null);
+  const cleanStr = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
+  function cleanMeal(m) {
+    if (!m || typeof m !== 'object' || typeof m.text !== 'string' || !m.text.trim()) return null;
+    return { id: ID.test(String(m.id)) ? m.id : uid(), meal: MEALS.some((x) => x[0] === m.meal) ? m.meal : 'snack', text: m.text.slice(0, 120), kcal: cleanNum(m.kcal), protein: cleanNum(m.protein) };
+  }
+  function cleanDay(v) {
+    if (!v || typeof v !== 'object' || !DATE.test(String(v.date))) return null;
+    return {
+      type: 'day', date: v.date, steps: cleanNum(v.steps), sleep: cleanNum(v.sleep), master_h: cleanNum(v.master_h), project_h: cleanNum(v.project_h),
+      farsi_min: cleanNum(v.farsi_min), spaans_min: cleanNum(v.spaans_min), workout: v.workout === true, note: cleanStr(v.note, 500),
+      water_ml: cleanNum(v.water_ml), meals: Array.isArray(v.meals) ? v.meals.map(cleanMeal).filter(Boolean).slice(0, 60) : [],
+      updated: Number(v.updated) || 0,
+    };
+  }
+  function cleanMonth(v) {
+    if (!v || typeof v !== 'object' || !/^\d{4}-\d{2}$/.test(String(v.month))) return null;
+    return { type: 'month', month: v.month, income: cleanNum(v.income), expenses: cleanNum(v.expenses), saved: cleanNum(v.saved), updated: Number(v.updated) || 0 };
+  }
+  function cleanSettings(v) {
+    if (!v || typeof v !== 'object') return null;
+    const o = { type: 'settings' };
+    Object.keys(DEF).forEach((k) => { const n = cleanNum(v[k]); o[k] = n == null ? DEF[k] : n; });
+    return o;
+  }
+  function cleanMedia(v) {
+    if (!v || typeof v !== 'object' || !ID.test(String(v.id)) || typeof v.title !== 'string' || !v.title.trim()) return null;
+    return {
+      id: v.id, kind: v.kind === 'serie' ? 'serie' : 'film', title: v.title.slice(0, 120), status: ['wil', 'bezig', 'gezien'].includes(v.status) ? v.status : 'wil',
+      rating: [1, 2, 3, 4, 5].includes(v.rating) ? v.rating : null, progress: cleanStr(v.progress, 40), finished: DATE.test(String(v.finished)) ? v.finished : null,
+      note: cleanStr(v.note, 500), updated: Number(v.updated) || 0,
+    };
+  }
+  function cleanBook(v) {
+    if (!v || typeof v !== 'object' || !ID.test(String(v.id)) || typeof v.title !== 'string' || !v.title.trim()) return null;
+    return {
+      id: v.id, title: v.title.slice(0, 120), author: cleanStr(v.author, 80), pages: cleanNum(v.pages), page: cleanNum(v.page) || 0,
+      status: ['wil', 'lezend', 'uit'].includes(v.status) ? v.status : 'wil', rating: [1, 2, 3, 4, 5].includes(v.rating) ? v.rating : null,
+      finished: DATE.test(String(v.finished)) ? v.finished : null, note: cleanStr(v.note, 500), updated: Number(v.updated) || 0,
+    };
+  }
+  function mergeList(arr, incoming, clean) {
+    let n = 0;
+    (Array.isArray(incoming) ? incoming : []).forEach((raw) => {
+      const c = clean(raw);
+      if (!c) return;
+      const i = arr.findIndex((x) => x.id === c.id);
+      if (i < 0) { arr.push(c); n++; } else if (c.updated >= (arr[i].updated || 0)) { arr[i] = c; n++; }
+    });
+    return n;
+  }
+  $('#imp-file').addEventListener('change', async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    try {
+      if (f.size > 5 * 1024 * 1024) throw new Error('size');
+      const o = JSON.parse(await f.text());
+      if (!o || typeof o !== 'object' || o.app !== 'lifemaxxing') throw new Error('shape');
+      let nd = 0, nm = 0;
+      Object.values(o.days || {}).forEach((raw) => {
+        const c = cleanDay(raw);
+        if (c && (!state.days[c.date] || c.updated >= (state.days[c.date].updated || 0))) { state.days[c.date] = c; nd++; }
+      });
+      Object.values(o.months || {}).forEach((raw) => {
+        const c = cleanMonth(raw);
+        if (c && (!state.months[c.month] || c.updated >= (state.months[c.month].updated || 0))) { state.months[c.month] = c; nm++; }
+      });
+      const nx = mergeList(state.media, o.media, cleanMedia), nb = mergeList(state.books, o.books, cleanBook);
+      if (!state.settings) state.settings = cleanSettings(o.settings);
+      persistAll();
+      fillDayForm(); fillSettings(); fillMonthForm(); renderAll(); renderBackup();
+      setStatus('backup-status', 'Teruggezet: ' + nd + ' dagen, ' + nm + ' maanden, ' + nx + ' films of series en ' + nb + ' boeken.');
+    } catch (err) {
+      setStatus('backup-status', 'Dit bestand is geen geldige Lifemaxxing-back-up.');
+    } finally { e.target.value = ''; }
+  });
+
+  // ---------- start ----------
+  $('#m-month').value = monthOf(today());
+  load();
+  fillDayForm(); fillSettings(); fillMonthForm(); renderAll(); renderBackup();
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  }
+})();
+</script>
+</body>
+</html>
